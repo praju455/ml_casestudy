@@ -1,0 +1,9 @@
+Model,Variant,Accuracy,Recall,Precision,F1,ROC_AUC,FN,FP
+LogisticRegression,Default,0.8197,0.75,0.84,0.7925,0.9069,7,4
+LogisticRegression,Balanced,0.8361,0.7857,0.8462,0.8148,0.908,6,4
+DecisionTree,Default,0.8197,0.8571,0.7742,0.8136,0.9091,4,7
+DecisionTree,Balanced,0.8197,0.8571,0.7742,0.8136,0.9091,4,7
+SVM,Default,0.8361,0.7857,0.8462,0.8148,0.9037,6,4
+SVM,Balanced,0.8361,0.7857,0.8462,0.8148,0.9037,6,4
+RandomForest,Default,0.8361,0.8214,0.8214,0.8214,0.908,5,5
+RandomForest,Balanced,0.8525,0.8214,0.8519,0.8364,0.9145,5,4

@@ -1,0 +1,4 @@
+Configuration,Accuracy,Recall,Precision,F1,ROC_AUC,FN,FP
+Ensemble(LR+KNN+RF),0.8525,0.8214,0.8519,0.8364,0.9264,5,4
+Ensemble(LR+SVM+RF),0.8361,0.7857,0.8462,0.8148,0.9156,6,4
+Ensemble(All 5),0.8033,0.75,0.8077,0.7778,0.9275,7,5

@@ -1,0 +1,16 @@
+Feature,Dtype,Description,Coding,Missing
+age,int64,Age in years,continuous,0
+sex,int64,Sex,"1=male, 0=female",0
+cp,int64,Chest pain type,"0=typical angina, 1=atypical angina, 2=non-anginal, 3=asymptomatic",0
+trestbps,int64,Resting blood pressure (mmHg),continuous,0
+chol,int64,Serum cholesterol (mg/dl),continuous (note: 0 is suspicious),0
+fbs,int64,Fasting blood sugar > 120 mg/dl,"1=true, 0=false",0
+restecg,int64,Resting ECG results,"0=normal, 1=ST-T wave abnormality, 2=LV hypertrophy",0
+thalach,int64,Maximum heart rate achieved,continuous,0
+exang,int64,Exercise-induced angina,"1=yes, 0=no",0
+oldpeak,float64,ST depression induced by exercise relative to rest,continuous,0
+slope,int64,Slope of peak exercise ST segment,"1=upsloping, 2=flat, 3=downsloping",0
+ca,float64,Number of major vessels coloured by fluoroscopy,0-3,4
+thal,float64,Thalassemia,"3=normal, 6=fixed defect, 7=reversible defect",2
+num,int64,Original heart disease diagnosis (0-4),"0=no disease, 1-4=disease present",0
+target,int64,Binary target (derived from num),"0=no disease, 1=disease",0

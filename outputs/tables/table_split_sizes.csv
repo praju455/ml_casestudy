@@ -1,0 +1,3 @@
+Subset,Records,Pct,No_Disease,Disease
+Train,242,79.9%,131,111
+Test,61,20.1%,33,28

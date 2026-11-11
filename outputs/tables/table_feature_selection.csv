@@ -1,0 +1,14 @@
+Feature,Set_A,Set_B,Set_C,MI_Score,RF_Importance,Reason
+age,✓,✓,✗,0.0,0.0843,Assignment primary
+sex,✓,✓,✓,0.0572,0.0346,Assignment primary
+cp,✓,✓,✓,0.1071,0.0963,Assignment primary
+trestbps,✓,✓,✗,0.0339,0.0714,Assignment primary
+chol,✓,✓,✓,0.058,0.0885,Assignment primary
+fbs,✗,✓,✗,0.0,0.0103,"MI < cutoff, excluded from C"
+restecg,✗,✓,✓,0.0756,0.0206,MI >= cutoff
+thalach,✓,✓,✓,0.1059,0.1079,Assignment primary
+exang,✗,✓,✓,0.0823,0.0484,MI >= cutoff
+oldpeak,✗,✓,✗,0.0432,0.0983,"MI < cutoff, excluded from C"
+slope,✗,✓,✓,0.1212,0.0431,MI >= cutoff
+ca,✗,✓,✓,0.0845,0.1089,MI >= cutoff
+thal,✗,✓,✓,0.1324,0.1402,MI >= cutoff
