@@ -21,6 +21,7 @@ def evaluate_on_test(model_name, fitted_pipeline, X_test, y_test):
     """
     y_pred = fitted_pipeline.predict(X_test)
     y_prob = fitted_pipeline.predict_proba(X_test)[:, 1]
+    matrix = confusion_matrix(y_test, y_pred)
 
     metrics = {
         "Model": model_name,
@@ -29,9 +30,9 @@ def evaluate_on_test(model_name, fitted_pipeline, X_test, y_test):
         "Recall": recall_score(y_test, y_pred, zero_division=0),
         "F1": f1_score(y_test, y_pred, zero_division=0),
         "ROC_AUC": roc_auc_score(y_test, y_prob),
-        "CM": confusion_matrix(y_test, y_pred).tolist(),
-        "FN": confusion_matrix(y_test, y_pred)[1, 0],  # false negatives (miss disease)
-        "FP": confusion_matrix(y_test, y_pred)[0, 1],  # false positives
+        "CM": matrix.tolist(),
+        "FN": matrix[1, 0],  # false negatives (miss disease)
+        "FP": matrix[0, 1],  # false positives
     }
     report = classification_report(y_test, y_pred, target_names=["No Disease", "Disease"])
     return metrics, report

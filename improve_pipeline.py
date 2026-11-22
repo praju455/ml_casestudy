@@ -208,7 +208,8 @@ print("Saved table_class_weighted.csv")
 # 3. SOFT VOTING ENSEMBLE (Set A)
 # -------------------------------------------------------------
 print("\n--- 3. Soft Voting Ensemble ---")
-base_clfs = {name: make_clf(name, get_params(name, "A")).fit(Xtr_A, y_tr) for name in MODEL_NAMES}
+# VotingClassifier clones and fits the supplied estimators.
+base_estimators = {name: make_clf(name, get_params(name, "A")) for name in MODEL_NAMES}
 
 ens_rows = []
 combos = {
@@ -218,7 +219,7 @@ combos = {
 }
 
 for label, members in combos.items():
-    estimators = [(m, base_clfs[m]) for m in members]
+    estimators = [(m, base_estimators[m]) for m in members]
     vc = VotingClassifier(estimators=estimators, voting="soft")
     vc.fit(Xtr_A, y_tr)
     preds = vc.predict(Xte_A)
