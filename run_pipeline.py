@@ -287,6 +287,7 @@ all_set_cv_data = {}
 all_hyperparams = []
 all_overfitting = []
 all_rcv_summaries = []
+y_repeated_cv = pd.concat([y_train, y_test])
 
 for set_label, feature_set in FEATURE_SETS.items():
     print(f"\n{'='*65}")
@@ -295,6 +296,7 @@ for set_label, feature_set in FEATURE_SETS.items():
 
     X_train_s = X_train[feature_set]
     X_test_s = X_test[feature_set]
+    X_repeated_cv = pd.concat([X_train_s, X_test_s])
 
     fitted_models = {}
     set_metrics = []
@@ -342,8 +344,7 @@ for set_label, feature_set in FEATURE_SETS.items():
         # Repeated CV for robustness
         unfitted = clone(best_pipeline)
         rcv_summary, cv_results = repeated_cv(
-            model_name, unfitted, pd.concat([X_train_s, X_test_s]),
-            pd.concat([y_train, y_test])
+            model_name, unfitted, X_repeated_cv, y_repeated_cv
         )
         rcv_summary["Feature_Set"] = set_label
         all_rcv_summaries.append(rcv_summary)

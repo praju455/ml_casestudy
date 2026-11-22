@@ -1,134 +1,73 @@
 # Heart Disease Prediction System
 
-A complete machine learning pipeline for predicting heart disease using the UCI Heart Disease (Cleveland) dataset.
+This machine learning case study compares five classifiers on 303 records from the Cleveland subset of the UCI Heart Disease dataset. It evaluates the six assignment predictors alongside the full and data-selected predictor sets. The models classify recorded disease status for an educational demonstration.
 
-> ⚠️ **DISCLAIMER:** This project is for **educational use only**. It is **not** medical advice and must not be used for clinical diagnosis or treatment decisions.
+## Dataset and features
 
----
+The Cleveland data are available as [raw](data/raw/heart_disease_raw.csv) and [processed](data/processed/heart_disease_processed.csv) CSVs under CC BY 4.0. The binary target maps `num = 0` to absence and `num > 0` to presence. There are 164 negative and 139 positive records. The only missing predictor values are four in `ca` and two in `thal`.
 
-## Project Structure
+| Set | Predictors | Purpose |
+| --- | --- | --- |
+| A (6) | `age`, `sex`, `cp`, `trestbps`, `chol`, `thalach` | Primary assignment comparison |
+| B (13) | All 13 predictors | Full-input comparison |
+| C (9) | `sex`, `cp`, `chol`, `restecg`, `thalach`, `exang`, `slope`, `ca`, `thal` | Training-data feature selection |
 
-```
-ml case studyy/
-├── data/
-│   ├── raw/                    # Raw CSV from UCI / ucimlrepo
-│   └── processed/              # Cleaned, binarised dataset
-├── notebooks/
-│   └── heart_disease_analysis.ipynb  # Main Jupyter notebook (runs top-to-bottom)
-├── src/
-│   ├── __init__.py
-│   ├── data.py                 # Data loading and saving
-│   ├── preprocessing.py        # Feature sets, Pipeline/ColumnTransformer builders
-│   ├── models.py               # Model definitions, hyperparameter grids, GridSearchCV
-│   ├── evaluation.py           # Metrics, repeated CV, overfitting check
-│   ├── plots.py                # All visualisation functions (save 300 dpi PNGs)
-│   └── predict.py              # Prediction interface (CLI + importable)
-├── outputs/
-│   ├── figures/                # PNG plots (300 dpi)
-│   ├── tables/                 # CSV result tables
-│   ├── models/                 # Saved best model (joblib)
-│   └── RESULTS_SUMMARY.md      # Full results for report writing
-├── run_pipeline.py             # Master script — runs everything end-to-end
-├── app.py                      # Optional Streamlit web app
-├── requirements.txt
-└── README.md
-```
+Set C keeps predictors whose transformed columns meet the mutual information cutoff of 0.05. Random Forest importance contributes to the ranking. The [feature-selection table](outputs/tables/table_feature_selection.csv) shows the membership and scores for each predictor.
 
----
+## Experiment design
 
-## Quick Start
+- The stratified 80/20 split uses random state 42, with 242 training and 61 test records shared across all three feature sets.
+- Each pipeline uses median imputation and standard scaling for the numeric branch, plus most-frequent imputation and one-hot encoding for chest pain type. Grid search fits these transformations inside the training folds.
+- Logistic Regression, K-Nearest Neighbours (KNN), Decision Tree, Support Vector Machine and Random Forest are tuned with five stratified folds and mean validation F1. Set C membership is fixed using the full 242-record training pool before this grid search.
+- Repeated cross-validation uses five repeats of five stratified folds over all 303 records with fixed grid settings. Its rankings describe variation across splits under this design, which reuses the selected settings and features.
 
-### 1. Install dependencies
+## Results
 
-```bash
-pip install -r requirements.txt
-```
+| Feature set | Highest test F1 | Test F1 | Test ROC-AUC | Highest mean repeated-CV F1 |
+| --- | --- | ---: | ---: | --- |
+| A | KNN | 0.8519 | 0.9080 | Logistic Regression (0.753) |
+| B | KNN | 0.9180 | 0.9627 | Random Forest (0.807) |
+| C | Logistic Regression | 0.8525 | 0.9481 | Logistic Regression (0.817) |
 
-### 2. Run the full pipeline
+On the 61-record test split, Set A KNN missed 5 of 28 positive cases and produced 3 false alarms. Set B KNN found all 28 positives and produced 5 false alarms. The saved six-feature KNN was selected using test F1 and then refitted on all 303 rows for the demo.
+
+The follow-up experiments compare decision thresholds, class weights and soft voting on the same test split. The threshold sweeps choose and score cutoffs on those test rows, so their gains are exploratory. The small sample and single cohort limit generalisation. The model is intended for education.
+
+See the [results summary](outputs/RESULTS_SUMMARY.md), [experiment tables](outputs/tables/), and [figures](outputs/figures/) for the full comparisons.
+
+## Run the project
+
+Run these commands from the repository root.
 
 ```bash
+python -m pip install -r requirements.txt
 python run_pipeline.py
+python improve_pipeline.py
 ```
 
-This will:
-- Fetch the UCI Heart Disease dataset (Cleveland, 303 rows)
-- Run full EDA and save figures
-- Train and tune 5 classifiers (LR, KNN, Decision Tree, SVM, Random Forest) on 3 feature sets
-- Evaluate on held-out test set + repeated CV
-- Save all outputs, tables, figures, best model
-- Generate `outputs/RESULTS_SUMMARY.md`
+The main pipeline first tries `ucimlrepo`. Its offline fallback expects the original `processed.cleveland.data` file at `data/raw/processed.cleveland.data`. The exploratory improvement script uses the processed CSV and hyperparameter table from the main pipeline.
 
-### 3. Run the Jupyter notebook
+Open the [analysis notebook](notebooks/heart_disease_analysis.ipynb) to review the workflow and generated outputs.
 
 ```bash
 jupyter notebook notebooks/heart_disease_analysis.ipynb
 ```
 
-### 4. Make a prediction (CLI)
+The CLI and Streamlit demo use the saved [Set A pipeline](outputs/models/best_model.joblib).
 
 ```bash
-python src/predict.py --age 55 --sex 1 --cp 0 --trestbps 130 --chol 250 --thalach 160
-```
-
-### 5. Launch the Streamlit app (optional)
-
-```bash
+python src/predict.py --age 55 --sex 1 --cp 2 --trestbps 130 --chol 250 --thalach 160
 streamlit run app.py
 ```
 
----
+The demo accepts chest-pain codes 0–3, while the committed training data use 1–4. Interpret the demo’s category labels accordingly.
 
-## Dataset
+## Project files
 
-- **Source:** UCI Machine Learning Repository — Heart Disease Dataset (Cleveland subset)
-- **URL:** https://archive.ics.uci.edu/dataset/45/heart+disease
-- **License:** CC BY 4.0
-- **Rows:** 303 | **Features:** 13 predictors + 1 target
-- **Target:** `num` (0–4) binarised → 0 = no disease, 1 = disease
-
----
-
-## Algorithms
-
-| Model | Library |
-|-------|---------|
-| Logistic Regression | sklearn |
-| K-Nearest Neighbours | sklearn |
-| Decision Tree | sklearn |
-| Support Vector Machine | sklearn |
-| Random Forest | sklearn |
-
-Hyperparameters tuned with **GridSearchCV (StratifiedKFold-5, F1 scoring)**.
-
----
-
-## Feature Sets
-
-| Set | Features | Purpose |
-|-----|----------|---------|
-| A (Primary) | age, sex, cp, trestbps, chol, thalach | Assignment requirement |
-| B | All 13 predictors | Full feature baseline |
-| C | Auto-selected (Mutual Information + RF Importance) | Data-driven selection |
-
----
-
-## Key Design Decisions
-
-- **No data leakage:** All preprocessing (imputation, scaling, OHE) is inside `sklearn Pipeline` / `ColumnTransformer`, fit on training data only.
-- **Outliers kept:** Small dataset (303 rows); removing outliers would lose too much information. Decision Trees and Random Forests are robust to outliers.
-- **Stratified splits & CV:** Class imbalance handled via stratification throughout.
-- **F1 as primary metric:** Heart disease screening — missing a true case (False Negative) is costlier than a false alarm.
-- **random_state=42** everywhere for reproducibility.
-
----
-
-## Outputs
-
-- `outputs/figures/` — ~30+ PNG plots (300 dpi)
-- `outputs/tables/` — CSV tables (metrics, hyperparameters, feature selection, etc.)
-- `outputs/models/best_model.joblib` — Serialised best pipeline
-- `outputs/RESULTS_SUMMARY.md` — Full results markdown for report writing
-
----
-
-*For educational use only. Not medical advice.*
+| Location | Purpose |
+| --- | --- |
+| [`src/`](src/) | Data loading, preprocessing, model definitions, evaluation, plots and prediction |
+| [`run_pipeline.py`](run_pipeline.py) | Main training and evaluation pipeline |
+| [`improve_pipeline.py`](improve_pipeline.py) | Threshold, class-weight and soft-voting experiments |
+| [`notebooks/`](notebooks/) | Reproducible analysis and visual results |
+| [`outputs/`](outputs/) | Saved tables, plots, model and results summary |
